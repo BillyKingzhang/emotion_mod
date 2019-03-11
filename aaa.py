@@ -1,9 +1,13 @@
 import pandas as pd
+import numpy as np
 import jieba
 import jieba.analyse
 import multiprocessing
 from gensim.models import Word2Vec
 from gensim.models.word2vec import LineSentence
+import numpy as np
+import gensim
+
 def stopwordslist(filepath):
     stopwords = [line.strip() for line in open(filepath, 'r').readlines()]
     return stopwords
@@ -47,6 +51,25 @@ def figure(np_f2):
     r = 0
 
     return r
+def wordvec(wlist, model):
+        list = []
+        for i in wlist:
+            i = i.replace('\n', '')
+            list.append(model[i])
+
+        return np.array(list, dtype='float')
+
+
+def filevec(filename, model):
+        fvec = []
+        with open(filename, 'r',encoding='utf-8') as f:
+            for line in f:
+                wordlist = line.split(' ')
+                vecs = wordvec(wordlist, model)
+                if len(vecs) > 0:
+                    vecarray = sum(np.array(vecs)) / len(vecs)
+                    fvec.append(vecarray)
+        return fvec
 
 
 if __name__ == '__main__':
@@ -76,13 +99,17 @@ if __name__ == '__main__':
     np_txt = list(np_agg['review'])
     train_y = list(np_agg['label'])
     np_f = make(np_txt)  # 简单处理文本
+    print('asdasdasdasd')
     np_f2 = point(np_f)  # 提取关键词
-    with open("np_f2.txt", "w") as f:
+    print(16516161)
+    with open("np_f2.txt", "w",encoding='utf-8') as f:
         for i in np_f2:
             f.write(i + '\n')
-    file_in = 'np_f2.txt'
-    file_out = 'txt.model'
-    file_out2 = 'txt.vector'
-    model = Word2Vec(LineSentence(file_in), size=300, window=5, min_count=5, workers=multiprocessing.cpu_count())
+
+    print(11110101010)
+
+    model = Word2Vec(LineSentence(file_in), size=300, window=5, min_count=0, workers=multiprocessing.cpu_count())
     model.save(file_out)
     model.wv.save_word2vec_format(file_out2, binary=False)
+    model = gensim.models.KeyedVectors.load_word2vec_format('txt.vector', binary=False)
+    output = filevec('np_f2.txt', model)
