@@ -55,6 +55,9 @@ def wordvec(wlist, model):
         list = []
         for i in wlist:
             i = i.replace('\n', '')
+            if i not in model:
+                list.append(np.zeros(300))
+                continue
             list.append(model[i])
 
         return np.array(list, dtype='float')
@@ -73,7 +76,7 @@ def filevec(filename, model):
 
 
 if __name__ == '__main__':
-    stopwords = stopwordslist('stop.txt')  # 加载停用词
+    stopwords = stopwordslist('stop_words.txt')  # 加载停用词
     """
    
     negwords = stopwordslist('neg.txt')  # 加载正面词
@@ -100,7 +103,8 @@ if __name__ == '__main__':
     train_y = list(np_agg['label'])
     np_f = make(np_txt)  # 简单处理文本
     print('asdasdasdasd')
-    np_f2 = point(np_f)  # 提取关键词
+    #np_f2 = point(np_f)  # 提取关键词
+    np_f2 = np_f
     print(16516161)
     with open("np_f2.txt", "w",encoding='utf-8') as f:
         for i in np_f2:
