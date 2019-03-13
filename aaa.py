@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import  matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
 import jieba
 import jieba.analyse
 import multiprocessing
@@ -117,3 +119,21 @@ if __name__ == '__main__':
     model.wv.save_word2vec_format(file_out2, binary=False)
     model = gensim.models.KeyedVectors.load_word2vec_format('txt.vector', binary=False)
     output = filevec('np_f2.txt', model)
+    trianx = pd.DataFrame(output)
+
+    trianx['y'] = train_y
+    trianx.to_csv('train_x_y.csv', sep=' ', encoding='utf-8')
+    t_x = trianx
+    del t_x['y']
+    """
+    pac =PCA(n_components =300)
+    pac.fit(t_x)
+    plt.figure(1,figsize=(4,3))
+    plt.clf()
+    plt.axes([.2,.2,.7,.7])
+    plt.plot(pac.explained_variance_,linewidth=2)
+    plt.xlabel('tight')
+    plt.ylabel('ex_v')
+    plt.show()
+    """
+    train_x = t_x.iloc[:,0:100]
