@@ -2,12 +2,17 @@ import pandas as pd
 import numpy as np
 import  matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
+from sklearn.model_selection import train_test_split
+from sklearn import svm
 import jieba
 import jieba.analyse
 import multiprocessing
 from gensim.models import Word2Vec
 from gensim.models.word2vec import LineSentence
 import numpy as np
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.tree import DecisionTreeClassifier
+import datetime
 import gensim
 
 def stopwordslist(filepath):
@@ -49,10 +54,6 @@ def point(np_f):
     return out
 
 
-def figure(np_f2):
-    r = 0
-
-    return r
 def wordvec(wlist, model):
         list = []
         for i in wlist:
@@ -77,7 +78,16 @@ def filevec(filename, model):
         return fvec
 
 
+def c(x):
+    if x==0:
+        return 0
+    else:
+        return 1
+
+
 if __name__ == '__main__':
+
+    starttime = datetime.datetime.now()
     stopwords = stopwordslist('stop_words.txt')  # 加载停用词
     """
    
@@ -96,23 +106,23 @@ if __name__ == '__main__':
 
     print("此文本感情倾向值为:", result)
     """
+
     file_in = 'np_f2.txt'
     file_out = 'txt.model'
     file_out2 = 'txt.vector'
     file_name = 'simplifyweibo_4_moods.csv'
     np_agg = pd.read_csv(file_name, encoding='utf-8', sep=',')  # 加载文本
     np_txt = list(np_agg['review'])
-    train_y = list(np_agg['label'])
+    train_y = list(np_agg['label'].apply(c))
+    print(00000000)
     np_f = make(np_txt)  # 简单处理文本
-    print('asdasdasdasd')
+
     #np_f2 = point(np_f)  # 提取关键词
     np_f2 = np_f
-    print(16516161)
+
     with open("np_f2.txt", "w",encoding='utf-8') as f:
         for i in np_f2:
             f.write(i + '\n')
-
-    print(11110101010)
 
     model = Word2Vec(LineSentence(file_in), size=300, window=5, min_count=0, workers=multiprocessing.cpu_count())
     model.save(file_out)
@@ -120,7 +130,7 @@ if __name__ == '__main__':
     model = gensim.models.KeyedVectors.load_word2vec_format('txt.vector', binary=False)
     output = filevec('np_f2.txt', model)
     trianx = pd.DataFrame(output)
-
+    print(111111111111)
     trianx['y'] = train_y
     trianx.to_csv('train_x_y.csv', sep=' ', encoding='utf-8')
     t_x = trianx
@@ -137,3 +147,19 @@ if __name__ == '__main__':
     plt.show()
     """
     train_x = t_x.iloc[:,0:100]
+    x_train, x_test, y_train, y_test = train_test_split(train_x, train_y, test_size = 0.33, random_state = 66)
+    ada = AdaBoostClassifier(DecisionTreeClassifier(min_samples_leaf=5), n_estimators=200, learning_rate=1)
+    """
+    clf = svm.SVC(C=2) 
+    clf.fit(x_train,y_train)
+    """
+    ada.fit(x_train, y_train)
+    print('test:', ada.score(x_test, y_test))
+    print('trian:', ada.score(x_train, y_train))
+    endtime = datetime.datetime.now()
+    print(endtime - starttime)
+
+
+
+
+
