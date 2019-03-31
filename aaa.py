@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from sklearn.externals import joblib
 import  matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from sklearn.model_selection import train_test_split
@@ -154,6 +155,7 @@ if __name__ == '__main__':
     clf.fit(x_train,y_train)
     """
     ada.fit(x_train, y_train)
+    joblib.dump(ada, 'ada.m')
     print('test:', ada.score(x_test, y_test))
     print('trian:', ada.score(x_train, y_train))
     endtime = datetime.datetime.now()
